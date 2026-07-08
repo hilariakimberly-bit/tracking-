@@ -23,7 +23,10 @@ app.secret_key = os.environ.get("SECRET_KEY", "logistics-royal-dev-secret")
 UPLOAD_FOLDER = os.path.join("static", "uploads")
 ALLOWED_EXT   = {"png", "jpg", "jpeg", "webp", "gif"}
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+try:
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+except Exception:
+    pass
 
 # ── Email config ──────────────────────────────────────────────────────────────
 try:
