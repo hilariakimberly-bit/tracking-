@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Track Shipment – Logistics Royal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    #map { height: 420px; width: 100%; border-radius: 1rem; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-100">
+
+  <!-- Navbar -->
+  <header class="bg-slate-900 border-b border-slate-700 px-6 py-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5">
+        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0v10l-8 4m0-14L4 17m8 4V11"/>
+          </svg>
+        </div>
+        <span class="text-white font-bold text-lg">Logistics Royal</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm text-slate-300">
+        <a href="/track" class="text-white font-semibold">Track</a>
+        <a href="/about" class="hover:text-white transition">About</a>
+        <a href="/privacy" class="hover:text-white transition">Privacy</a>
+        <a href="/login" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-lg transition font-semibold">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="max-w-4xl mx-auto px-4 py-10">
+
+    <!-- Search card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-8">
+      <h1 class="text-2xl font-bold text-slate-800 mb-1">Track Your Shipment</h1>
+      <p class="text-slate-500 text-sm mb-6">Enter your tracking number to see the live location on the map.</p>
+
+      <form method="POST" action="/track" class="flex flex-col sm:flex-row gap-3">
+        <input name="tracking_number" type="text" required
+          value="{{ tracking_number }}"
+          placeholder="e.g. TRK-A1B2C3D4"
+          class="flex-1 px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none
+                 focus:ring-2 focus:ring-blue-400 bg-slate-50 font-mono uppercase placeholder-normal"/>
+        <button type="submit"
+          class="px-7 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition text-sm shadow-sm">
+          🔍 Track
+        </button>
+      </form>
+
+      {% if error %}
+        <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm flex items-start gap-2">
+          <span class="text-lg leading-none">⚠</span>
+          <span>{{ error }}</span>
+        </div>
+      {% endif %}
+    </div>
+
+    {% if result %}
+      <!-- Shipment info bar -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-6 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p class="text-xs text-slate-400 font-semibold uppercase tracking-wide mb-1">Tracking Number</p>
+          <p class="font-mono font-bold text-slate-800 text-lg">{{ result["tracking_number"] }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 font-semibold uppercase tracking-wide mb-1">Current Status</p>
+          <span class="text-sm font-semibold px-3 py-1 rounded-full
+            {% if result['current_status'] == 'Pending' %}bg-amber-100 text-amber-700
+            {% elif 'Delivered' in result['current_status'] %}bg-green-100 text-green-700
+            {% else %}bg-blue-100 text-blue-700{% endif %}">
+            {{ result["current_status"] }}
+          </span>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 font-semibold uppercase tracking-wide mb-1">Created</p>
+          <p class="text-sm text-slate-600">{{ result["created_at"] }}</p>
+        </div>
+        {% if result['destination_address'] %}
+        <div>
+          <p class="text-xs text-slate-400 font-semibold uppercase tracking-wide mb-1">Final Destination</p>
+          <p class="text-sm font-semibold text-emerald-700">🏁 {{ result['destination_address'] }}</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Map -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
+        <div id="map-status" class="hidden mb-3 p-3 rounded-lg text-sm font-medium"></div>
+        <div id="map"></div>
+      </div>
+
+      <!-- Package Details -->
+      {% if result['image_filename'] or result['description'] or result['weight_kg'] %}
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-6">
+        <h2 class="text-sm font-bold text-slate-600 uppercase tracking-wide mb-4">Package Details</h2>
+        <div class="flex flex-col sm:flex-row gap-5">
+          {% if result['image_filename'] %}
+          <div class="flex-shrink-0">
+            <img src="/static/uploads/{{ result['image_filename'] }}"
+                 alt="Package image"
+                 class="w-full sm:w-48 h-40 object-cover rounded-xl border border-slate-100 shadow-sm"/>
+          </div>
+          {% endif %}
+          <div class="flex-1">
+            {% if result['package_type'] %}
+              <span class="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full mb-3">{{ result['package_type'] }}</span>
+            {% endif %}
+            {% if result['description'] %}
+              <p class="text-slate-600 text-sm mb-4 leading-relaxed">{{ result['description'] }}</p>
+            {% endif %}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {% if result['weight_kg'] %}
+              <div class="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+                <p class="text-lg font-bold text-slate-800">{{ result['weight_kg'] }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">kg &middot; Weight</p>
+              </div>
+              {% endif %}
+              {% if result['length_cm'] %}
+              <div class="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+                <p class="text-lg font-bold text-slate-800">{{ result['length_cm'] }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">cm &middot; Length</p>
+              </div>
+              {% endif %}
+              {% if result['width_cm'] %}
+              <div class="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+                <p class="text-lg font-bold text-slate-800">{{ result['width_cm'] }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">cm &middot; Width</p>
+              </div>
+              {% endif %}
+              {% if result['height_cm'] %}
+              <div class="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+                <p class="text-lg font-bold text-slate-800">{{ result['height_cm'] }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">cm &middot; Height</p>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Timeline -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <h2 class="text-base font-bold text-slate-700 mb-5 flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          Shipment Journey
+        </h2>
+
+        {% if history %}
+          <ol class="relative border-l-2 border-slate-200 ml-3">
+            {% for h in history|reverse %}
+              <li class="mb-6 ml-6">
+                <span class="absolute -left-[9px] w-4 h-4 rounded-full flex items-center justify-center
+                  {{ 'bg-blue-600 ring-4 ring-blue-100' if loop.first else 'bg-slate-300' }}">
+                </span>
+                <div class="p-4 rounded-xl border {{ 'bg-blue-50 border-blue-200' if loop.first else 'bg-slate-50 border-slate-100' }}">
+                  <div class="flex items-start justify-between gap-2 flex-wrap">
+                    <div>
+                      <p class="font-semibold text-slate-800 text-sm">
+                        📍 {{ h["city_name"] }}
+                        {% if loop.first %}
+                          <span class="ml-1 text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">Current</span>
+                        {% endif %}
+                      </p>
+                      <p class="text-slate-500 text-sm mt-0.5">{{ h["status_notes"] }}</p>
+                    </div>
+                    <time class="text-xs text-slate-400 whitespace-nowrap">{{ h["updated_at"] }}</time>
+                  </div>
+                </div>
+              </li>
+            {% endfor %}
+          </ol>
+        {% else %}
+          <p class="text-slate-400 text-sm text-center py-8">
+            This shipment has not been dispatched yet. Check back soon.
+          </p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-16 bg-slate-900 text-slate-400 py-8">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
+      <span class="text-white font-bold">Logistics Royal</span>
+      <div class="flex gap-6">
+        <a href="/about" class="hover:text-white transition">About</a>
+        <a href="/privacy" class="hover:text-white transition">Privacy</a>
+        <a href="/login" class="hover:text-white transition">Login</a>
+      </div>
+      <p class="text-xs">© 2025 Logistics Royal</p>
+    </div>
+  </footer>
+
+  {% if result %}
+  <script>
+    const history         = {{ history | tojson }};
+    const destinationAddr = {{ result['destination_address'] | tojson }};
+
+    const map = L.map('map').setView([20, 0], 2);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+      subdomains: 'abcd', maxZoom: 19
+    }).addTo(map);
+
+    const statusEl = document.getElementById('map-status');
+    function showStatus(msg, isError = false) {
+      statusEl.textContent = msg;
+      statusEl.className = `mb-3 p-3 rounded-lg text-sm font-medium ${
+        isError ? 'bg-red-50 border border-red-200 text-red-700'
+                : 'bg-blue-50 border border-blue-200 text-blue-700'}`;
+      statusEl.classList.remove('hidden');
+    }
+
+    const currentIcon = L.divIcon({
+      className: '',
+      html: `<div style="background:#2563eb;width:16px;height:16px;border-radius:50%;
+                         border:3px solid #fff;box-shadow:0 0 0 3px #2563eb"></div>`,
+      iconSize: [16, 16], iconAnchor: [8, 8]
+    });
+    const destIcon = L.divIcon({
+      className: '',
+      html: `<div style="background:#16a34a;width:22px;height:22px;border-radius:50%;
+                         border:3px solid #fff;box-shadow:0 0 0 3px #16a34a;
+                         display:flex;align-items:center;justify-content:center;
+                         font-size:11px">&#127937;</div>`,
+      iconSize: [22, 22], iconAnchor: [11, 11]
+    });
+
+    async function geocode(query) {
+      const res  = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&accept-language=en`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      const data = await res.json();
+      if (!data || data.length === 0) return null;
+      return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+    }
+
+    async function renderMap() {
+      if (!history || history.length === 0) {
+        showStatus('No location updates yet for this shipment.');
+        return;
+      }
+
+      const latest = history[history.length - 1];
+
+      try {
+        const [current, destination] = await Promise.all([
+          geocode(latest.city_name),
+          destinationAddr ? geocode(destinationAddr) : Promise.resolve(null)
+        ]);
+
+        if (!current) {
+          showStatus(`⚠ Could not locate "${latest.city_name}" on the map.`, true);
+          return;
+        }
+
+        L.marker([current.lat, current.lon], { icon: currentIcon })
+          .addTo(map)
+          .bindPopup(`
+            <div style="min-width:170px">
+              <p style="font-weight:700;font-size:13px;color:#2563eb;margin:0 0 3px">📦 Current Location</p>
+              <p style="font-weight:600;font-size:14px;margin:0 0 3px">${latest.city_name}</p>
+              <p style="color:#555;font-size:12px;margin:0">${latest.status_notes}</p>
+            </div>
+          `).openPopup();
+
+        if (destination) {
+          L.marker([destination.lat, destination.lon], { icon: destIcon })
+            .addTo(map)
+            .bindPopup(`
+              <div style="min-width:170px">
+                <p style="font-weight:700;font-size:13px;color:#16a34a;margin:0 0 3px">🏁 Final Destination</p>
+                <p style="font-size:13px;margin:0">${destinationAddr}</p>
+              </div>
+            `);
+
+          L.polyline(
+            [[current.lat, current.lon], [destination.lat, destination.lon]],
+            { color: '#2563eb', weight: 2.5, dashArray: '8, 8', opacity: 0.7 }
+          ).addTo(map);
+
+          map.fitBounds(
+            [[current.lat, current.lon], [destination.lat, destination.lon]],
+            { padding: [60, 60] }
+          );
+        } else {
+          map.flyTo([current.lat, current.lon], 10, { animate: true, duration: 1.5 });
+        }
+
+      } catch (e) {
+        showStatus('⚠ Network error loading map. Please check your connection.', true);
+      }
+    }
+
+    renderMap();
+  </script>
+  {% endif %}
+
+</body>
+</html>

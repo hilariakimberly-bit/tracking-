@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Us – Logistics Royal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-slate-800">
+
+  <!-- Navbar -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-100 shadow-sm">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5">
+        <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0v10l-8 4m0-14L4 17m8 4V11"/>
+          </svg>
+        </div>
+        <span class="text-xl font-bold text-slate-900">Logistics Royal</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+        <a href="/track" class="hover:text-blue-600 transition">Track Shipment</a>
+        <a href="/about" class="text-blue-600 font-semibold">About Us</a>
+        <a href="/privacy" class="hover:text-blue-600 transition">Privacy Policy</a>
+        <a href="/login" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-lg transition">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-slate-900 to-blue-950 text-white py-20 text-center px-6">
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-4">About Logistics Royal</h1>
+    <p class="text-slate-300 text-lg max-w-2xl mx-auto">
+      We're on a mission to make global logistics transparent, simple, and accessible for everyone.
+    </p>
+  </section>
+
+  <!-- Mission -->
+  <section class="py-20 max-w-4xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <h2 class="text-3xl font-bold text-slate-900 mb-4">Our Mission</h2>
+        <p class="text-slate-600 leading-relaxed mb-4">
+          Logistics Royal was built to solve a simple but frustrating problem: not knowing where your package is.
+          We believe every person and business deserves real-time visibility into their shipments — without
+          complicated software or expensive subscriptions.
+        </p>
+        <p class="text-slate-600 leading-relaxed">
+          Using open-source mapping technology (OpenStreetMap + Leaflet.js), we provide live, interactive
+          tracking that works anywhere in the world, completely free of proprietary map APIs.
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-blue-50 rounded-2xl p-6 text-center">
+          <p class="text-4xl font-extrabold text-blue-600 mb-1">100%</p>
+          <p class="text-slate-600 text-sm font-medium">Open Source Maps</p>
+        </div>
+        <div class="bg-emerald-50 rounded-2xl p-6 text-center">
+          <p class="text-4xl font-extrabold text-emerald-600 mb-1">24/7</p>
+          <p class="text-slate-600 text-sm font-medium">Live Tracking</p>
+        </div>
+        <div class="bg-violet-50 rounded-2xl p-6 text-center">
+          <p class="text-4xl font-extrabold text-violet-600 mb-1">🔒</p>
+          <p class="text-slate-600 text-sm font-medium">Secure & Private</p>
+        </div>
+        <div class="bg-amber-50 rounded-2xl p-6 text-center">
+          <p class="text-4xl font-extrabold text-amber-600 mb-1">🌍</p>
+          <p class="text-slate-600 text-sm font-medium">Global Coverage</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="bg-slate-50 py-20">
+    <div class="max-w-5xl mx-auto px-6">
+      <h2 class="text-3xl font-bold text-slate-900 text-center mb-12">Our Values</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-white rounded-2xl p-7 border border-slate-100 shadow-sm">
+          <div class="text-3xl mb-4">🔍</div>
+          <h3 class="font-bold text-slate-800 text-lg mb-2">Transparency</h3>
+          <p class="text-slate-500 text-sm leading-relaxed">
+            Every location update is logged and visible. No black boxes, no guessing — just clear, honest tracking data.
+          </p>
+        </div>
+        <div class="bg-white rounded-2xl p-7 border border-slate-100 shadow-sm">
+          <div class="text-3xl mb-4">⚡</div>
+          <h3 class="font-bold text-slate-800 text-lg mb-2">Simplicity</h3>
+          <p class="text-slate-500 text-sm leading-relaxed">
+            Track any shipment in seconds. No app download, no account required — just a tracking number and a click.
+          </p>
+        </div>
+        <div class="bg-white rounded-2xl p-7 border border-slate-100 shadow-sm">
+          <div class="text-3xl mb-4">🛡️</div>
+          <h3 class="font-bold text-slate-800 text-lg mb-2">Security</h3>
+          <p class="text-slate-500 text-sm leading-relaxed">
+            Client data is isolated and protected. Passwords are hashed, sessions are secure, and access is role-controlled.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="py-20 max-w-4xl mx-auto px-6 text-center">
+    <h2 class="text-3xl font-bold text-slate-900 mb-4">Built with ❤️</h2>
+    <p class="text-slate-500 text-base max-w-xl mx-auto mb-10">
+      Logistics Royal is built on modern, open-source technologies — Flask, SQLite, Leaflet.js, and OpenStreetMap —
+      making it lightweight, fast, and free to run.
+    </p>
+    <a href="/track"
+      class="inline-block bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-3.5 rounded-xl transition shadow-lg shadow-blue-200 text-sm">
+      Start Tracking Now →
+    </a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-10">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
+      <span class="text-white font-bold">Logistics Royal</span>
+      <div class="flex gap-6">
+        <a href="/track" class="hover:text-white transition">Track</a>
+        <a href="/about" class="hover:text-white transition">About</a>
+        <a href="/privacy" class="hover:text-white transition">Privacy</a>
+        <a href="/login" class="hover:text-white transition">Login</a>
+      </div>
+      <p class="text-xs">© 2025 Logistics Royal. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Logistics Royal – Real-Time Shipment Tracking</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-slate-800 font-sans">
+
+  <!-- ── Navbar ── -->
+  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-100 shadow-sm">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2.5">
+        <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0v10l-8 4m0-14L4 17m8 4V11"/>
+          </svg>
+        </div>
+        <span class="text-xl font-bold text-slate-900">Logistics Royal</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+        <a href="/track" class="hover:text-blue-600 transition">Track Shipment</a>
+        <a href="/about" class="hover:text-blue-600 transition">About Us</a>
+        <a href="/contact" class="hover:text-blue-600 transition">Contact</a>
+        <a href="/privacy" class="hover:text-blue-600 transition">Privacy Policy</a>
+      </nav>
+      <div class="flex items-center gap-3">
+        <a href="/login"
+          class="text-sm font-semibold text-blue-600 hover:text-blue-700 transition px-4 py-2 rounded-lg hover:bg-blue-50">
+          Sign In
+        </a>
+        <a href="/track"
+          class="text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition shadow-sm shadow-blue-200">
+          Track Now
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Hero ── -->
+  <section class="relative bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white overflow-hidden">
+    <div class="absolute inset-0 opacity-10"
+      style="background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
+             linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px);
+             background-size: 40px 40px;">
+    </div>
+    <div class="relative max-w-6xl mx-auto px-6 py-28 text-center">
+      <span class="inline-block bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 tracking-wide uppercase">
+        Real-Time Logistics Platform
+      </span>
+      <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6 tracking-tight">
+        Logistics Royal<br/>
+        <span class="text-blue-400">Track Anywhere, Anytime</span>
+      </h1>
+      <p class="text-slate-300 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+        Enter your tracking number and watch your package move across the globe on a live interactive map — powered by OpenStreetMap.
+      </p>
+      <form action="/track" method="POST" class="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+        <input name="tracking_number" type="text" required
+          placeholder="Enter tracking number (e.g. TRK-A1B2C3D4)"
+          class="flex-1 px-5 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white
+                 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"/>
+        <button type="submit"
+          class="px-7 py-3.5 bg-blue-500 hover:bg-blue-400 text-white font-bold rounded-xl transition
+                 shadow-lg shadow-blue-500/30 text-sm whitespace-nowrap">
+          🔍 Track Now
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ── Warehouse / Workers Image Section ── -->
+  <section class="relative bg-slate-900 overflow-hidden">
+    <!-- Real photo from Unsplash: warehouse workers with packages -->
+    <img
+      src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1400&q=80&fit=crop"
+      alt="Logistics Royal warehouse team processing shipments"
+      class="w-full h-[480px] object-cover opacity-50"/>
+
+    <!-- Branded overlay content -->
+    <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+      <!-- Company name watermark on image -->
+      <div class="mb-6">
+        <div class="inline-flex items-center gap-3 bg-blue-600/80 backdrop-blur px-6 py-3 rounded-2xl border border-blue-400/40 shadow-xl">
+          <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0v10l-8 4m0-14L4 17m8 4V11"/>
+          </svg>
+          <span class="text-white font-extrabold text-2xl tracking-wide">LOGISTICS ROYAL</span>
+        </div>
+      </div>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4 drop-shadow-lg">
+        Our Team. Your Cargo. Delivered.
+      </h2>
+      <p class="text-slate-200 text-base md:text-lg max-w-2xl leading-relaxed drop-shadow">
+        From our warehouses to your doorstep — our dedicated team handles every shipment with precision,
+        care, and full real-time visibility at every step of the journey.
+      </p>
+      <!-- Stats bar -->
+      <div class="mt-10 grid grid-cols-3 gap-6 md:gap-16">
+        <div class="text-center">
+          <p class="text-3xl font-extrabold text-blue-400">50K+</p>
+          <p class="text-slate-300 text-sm mt-1">Shipments Delivered</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-extrabold text-blue-400">120+</p>
+          <p class="text-slate-300 text-sm mt-1">Countries Covered</p>
+        </div>
+        <div class="text-center">
+          <p class="text-3xl font-extrabold text-blue-400">99.8%</p>
+          <p class="text-slate-300 text-sm mt-1">On-Time Rate</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Office / In-Transit Split Section ── -->
+  <section class="py-20 bg-white">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl font-bold text-slate-900">Inside Logistics Royal</h2>
+        <p class="text-slate-500 mt-3 text-base max-w-xl mx-auto">
+          From our operations hub to the road — every package is tracked, handled, and delivered with care.
+        </p>
+      </div>
+      <div class="grid md:grid-cols-2 gap-8">
+
+        <!-- Office team photo -->
+        <div class="relative rounded-2xl overflow-hidden shadow-lg group">
+          <img
+            src="https://images.unsplash.com/photo-1553413077-190dd305871c?w=800&q=80&fit=crop"
+            alt="Logistics Royal office operations team"
+            class="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-6">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-2 h-2 bg-blue-400 rounded-full"></span>
+                <span class="text-blue-300 text-xs font-semibold uppercase tracking-wide">Operations Hub</span>
+              </div>
+              <h3 class="text-white font-bold text-xl">Our Control Center</h3>
+              <p class="text-slate-300 text-sm mt-1">
+                Our logistics coordinators monitor every shipment in real time, ensuring nothing slips through the cracks.
+              </p>
+            </div>
+          </div>
+          <!-- Brand badge -->
+          <div class="absolute top-4 right-4 bg-blue-600/90 text-white text-xs font-bold px-3 py-1.5 rounded-lg backdrop-blur">
+            LOGISTICS ROYAL
+          </div>
+        </div>
+
+        <!-- Transit / warehouse photo -->
+        <div class="relative rounded-2xl overflow-hidden shadow-lg group">
+          <img
+            src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&q=80&fit=crop"
+            alt="Logistics Royal workers clearing shipments in transit"
+            class="w-full h-72 object-cover group-hover:scale-105 transition-transform duration-500"/>
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-6">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                <span class="text-emerald-300 text-xs font-semibold uppercase tracking-wide">In Transit</span>
+              </div>
+              <h3 class="text-white font-bold text-xl">Shipments on the Move</h3>
+              <p class="text-slate-300 text-sm mt-1">
+                Our warehouse team processes hundreds of packages daily — sorted, sealed, and dispatched on schedule.
+              </p>
+            </div>
+          </div>
+          <!-- Brand badge -->
+          <div class="absolute top-4 right-4 bg-emerald-600/90 text-white text-xs font-bold px-3 py-1.5 rounded-lg backdrop-blur">
+            LOGISTICS ROYAL
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ── -->
+  <section class="py-24 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-14">
+        <h2 class="text-3xl font-bold text-slate-900">Everything You Need</h2>
+        <p class="text-slate-500 mt-3 text-base max-w-xl mx-auto">
+          A complete logistics management platform for businesses and their clients.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white rounded-2xl p-7 border border-slate-100 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+            </svg>
+          </div>
+          <h3 class="font-bold text-slate-800 text-lg mb-2">Live Map Tracking</h3>
+          <p class="text-slate-500 text-sm leading-relaxed">
+            Watch your shipment's current location on an interactive OpenStreetMap with smooth animations and location pins.
+          </p>
+        </div>
+        <div class="bg-white rounded-2xl p-7 border border-slate-100 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+            </svg>
+          </div>
+          <h3 class="font-bold text-slate-800 text-lg mb-2">Full History Timeline</h3>
+          <p class="text-slate-500 text-sm leading-relaxed">
+            Every city stop and status update is recorded in a clean chronological timeline so you never miss a step.
+          </p>
+        </div>
+        <div class="bg-white rounded-2xl p-7 border border-slate-100 shadow-sm hover:shadow-md transition">
+          <div class="w-12 h-12 bg-violet-100 rounded-xl flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <h3 class="font-bold text-slate-800 text-lg mb-2">Secure & Private</h3>
+          <p class="text-slate-500 text-sm leading-relaxed">
+            Each client only sees their own shipments. Role-based access ensures your data stays completely private.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How it works ── -->
+  <section class="py-24 bg-white">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      <h2 class="text-3xl font-bold text-slate-900 mb-14">How It Works</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div class="flex flex-col items-center">
+          <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold mb-4 shadow-lg shadow-blue-200">1</div>
+          <h4 class="font-bold text-slate-800 mb-2">Get Your Tracking ID</h4>
+          <p class="text-slate-500 text-sm">Logistics Royal assigns a unique tracking number to your shipment.</p>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold mb-4 shadow-lg shadow-blue-200">2</div>
+          <h4 class="font-bold text-slate-800 mb-2">Enter It Here</h4>
+          <p class="text-slate-500 text-sm">Type your tracking number into the search box on our Track page.</p>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold mb-4 shadow-lg shadow-blue-200">3</div>
+          <h4 class="font-bold text-slate-800 mb-2">See It Live on the Map</h4>
+          <p class="text-slate-500 text-sm">Your shipment's current location appears instantly on an interactive map.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA Banner ── -->
+  <section class="bg-blue-600 py-16">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h2 class="text-3xl font-bold text-white mb-4">Ready to track your shipment?</h2>
+      <p class="text-blue-100 mb-8 text-base">No account needed. Just enter your tracking number and go.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/track"
+          class="inline-block bg-white text-blue-600 font-bold px-8 py-3.5 rounded-xl hover:bg-blue-50 transition shadow-lg text-sm">
+          Track a Shipment →
+        </a>
+        <a href="/contact"
+          class="inline-block bg-blue-700 hover:bg-blue-800 text-white font-bold px-8 py-3.5 rounded-xl transition text-sm border border-blue-400/30">
+          Contact Us
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer class="bg-slate-900 text-slate-400 py-12">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row items-start justify-between gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0v10l-8 4m0-14L4 17m8 4V11"/>
+              </svg>
+            </div>
+            <span class="text-white font-bold text-lg">Logistics Royal</span>
+          </div>
+          <p class="text-slate-500 text-sm max-w-xs">
+            Real-time shipment tracking powered by open-source mapping technology.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-x-16 gap-y-2 text-sm">
+          <a href="/track" class="hover:text-white transition">Track Shipment</a>
+          <a href="/about" class="hover:text-white transition">About Us</a>
+          <a href="/contact" class="hover:text-white transition">Contact</a>
+          <a href="/privacy" class="hover:text-white transition">Privacy Policy</a>
+          <a href="/login" class="hover:text-white transition">Client Login</a>
+        </div>
+      </div>
+      <div class="border-t border-slate-800 pt-6 text-center text-xs text-slate-600">
+        © 2025 Logistics Royal. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

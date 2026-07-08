@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Track {{ shipment["tracking_number"] }} – Logistics Royal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    #map { height: 420px; width: 100%; border-radius: 1rem; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-100">
+
+  <!-- Navbar -->
+  <nav class="bg-slate-900 border-b border-slate-700 px-6 py-4">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/client" class="text-slate-400 hover:text-white transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0v10l-8 4m0-14L4 17m8 4V11"/>
+          </svg>
+        </div>
+        <span class="text-white font-bold text-lg">Logistics Royal</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-slate-300 text-sm">👤 {{ session.username }}</span>
+        <a href="/logout" class="text-sm text-red-400 hover:text-red-300 transition">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-4xl mx-auto px-4 py-8">
+
+    <!-- Header -->
+    <div class="mb-6 flex items-center gap-3 flex-wrap">
+      <h1 class="text-2xl font-bold text-slate-800 font-mono">{{ shipment["tracking_number"] }}</h1>
+      <span class="text-sm font-semibold px-3 py-1 rounded-full
+        {% if shipment['current_status'] == 'Pending' %}bg-amber-100 text-amber-700
+        {% elif 'Delivered' in shipment['current_status'] %}bg-green-100 text-green-700
+        {% else %}bg-blue-100 text-blue-700{% endif %}">
+        {{ shipment["current_status"] }}
+      </span>
+    </div>
+    {% if shipment['destination_address'] %}
+    <div class="mb-5 flex items-center gap-2 text-sm text-slate-600 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3">
+      <span class="text-emerald-600 font-bold text-base">🏁</span>
+      <span><strong class="text-emerald-700">Final Destination:</strong> {{ shipment['destination_address'] }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Package Details Card -->
+    {% if shipment['image_filename'] or shipment['description'] or shipment['weight_kg'] %}
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-6">
+      <h2 class="text-sm font-bold text-slate-600 uppercase tracking-wide mb-4">Package Details</h2>
+      <div class="flex flex-col sm:flex-row gap-5">
+
+        <!-- Image -->
+        {% if shipment['image_filename'] %}
+        <div class="flex-shrink-0">
+          <img src="/static/uploads/{{ shipment['image_filename'] }}"
+               alt="Package image"
+               class="w-full sm:w-48 h-40 object-cover rounded-xl border border-slate-100 shadow-sm"/>
+        </div>
+        {% endif %}
+
+        <!-- Specs -->
+        <div class="flex-1">
+          {% if shipment['package_type'] %}
+            <span class="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full mb-3">
+              {{ shipment['package_type'] }}
+            </span>
+          {% endif %}
+          {% if shipment['description'] %}
+            <p class="text-slate-600 text-sm mb-4 leading-relaxed">{{ shipment['description'] }}</p>
+          {% endif %}
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {% if shipment['weight_kg'] %}
+            <div class="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+              <p class="text-lg font-bold text-slate-800">{{ shipment['weight_kg'] }}</p>
+              <p class="text-xs text-slate-400 mt-0.5">kg &middot; Weight</p>
+            </div>
+            {% endif %}
+            {% if shipment['length_cm'] %}
+            <div class="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+              <p class="text-lg font-bold text-slate-800">{{ shipment['length_cm'] }}</p>
+              <p class="text-xs text-slate-400 mt-0.5">cm &middot; Length</p>
+            </div>
+            {% endif %}
+            {% if shipment['width_cm'] %}
+            <div class="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+              <p class="text-lg font-bold text-slate-800">{{ shipment['width_cm'] }}</p>
+              <p class="text-xs text-slate-400 mt-0.5">cm &middot; Width</p>
+            </div>
+            {% endif %}
+            {% if shipment['height_cm'] %}
+            <div class="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+              <p class="text-lg font-bold text-slate-800">{{ shipment['height_cm'] }}</p>
+              <p class="text-xs text-slate-400 mt-0.5">cm &middot; Height</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Map -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
+      <div id="map-status" class="hidden mb-3 p-3 rounded-lg text-sm font-medium"></div>
+      <div id="map"></div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+      <h2 class="text-base font-bold text-slate-700 mb-5 flex items-center gap-2">
+        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        Shipment Journey
+      </h2>
+
+      {% if shipment_history %}
+        <ol class="relative border-l-2 border-slate-200 ml-3">
+          {% for h in shipment_history|reverse %}
+            <li class="mb-6 ml-6">
+              <span class="absolute -left-[9px] w-4 h-4 rounded-full
+                {{ 'bg-blue-600 ring-4 ring-blue-100' if loop.first else 'bg-slate-300' }}">
+              </span>
+              <div class="p-4 rounded-xl border {{ 'bg-blue-50 border-blue-200' if loop.first else 'bg-slate-50 border-slate-100' }}">
+                <div class="flex items-start justify-between gap-2 flex-wrap">
+                  <div>
+                    <p class="font-semibold text-slate-800 text-sm">
+                      📍 {{ h["city_name"] }}
+                      {% if loop.first %}
+                        <span class="ml-1 text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">Current</span>
+                      {% endif %}
+                    </p>
+                    <p class="text-slate-500 text-sm mt-0.5">{{ h["status_notes"] }}</p>
+                  </div>
+                  <time class="text-xs text-slate-400 whitespace-nowrap">{{ h["updated_at"] }}</time>
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ol>
+      {% else %}
+        <p class="text-slate-400 text-sm text-center py-8">No location updates yet. Check back soon.</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <script>
+    const shipmentHistory   = {{ shipment_history | tojson }};
+    const destinationAddr   = {{ shipment['destination_address'] | tojson }};
+
+    const map = L.map('map').setView([20, 0], 2);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>',
+      subdomains: 'abcd', maxZoom: 19
+    }).addTo(map);
+
+    const statusEl = document.getElementById('map-status');
+    function showStatus(msg, isError = false) {
+      statusEl.textContent = msg;
+      statusEl.className = `mb-3 p-3 rounded-lg text-sm font-medium ${
+        isError ? 'bg-red-50 border border-red-200 text-red-700'
+                : 'bg-blue-50 border border-blue-200 text-blue-700'}`;
+      statusEl.classList.remove('hidden');
+    }
+
+    // Custom marker icons
+    const currentIcon = L.divIcon({
+      className: '',
+      html: `<div style="background:#2563eb;width:16px;height:16px;border-radius:50%;
+                         border:3px solid #fff;box-shadow:0 0 0 3px #2563eb"></div>`,
+      iconSize: [16, 16], iconAnchor: [8, 8]
+    });
+    const destIcon = L.divIcon({
+      className: '',
+      html: `<div style="background:#16a34a;width:22px;height:22px;border-radius:50%;
+                         border:3px solid #fff;box-shadow:0 0 0 3px #16a34a;
+                         display:flex;align-items:center;justify-content:center;
+                         font-size:11px">&#127937;</div>`,
+      iconSize: [22, 22], iconAnchor: [11, 11]
+    });
+
+    async function geocode(query) {
+      const res  = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&accept-language=en`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      const data = await res.json();
+      if (!data || data.length === 0) return null;
+      return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+    }
+
+    async function renderMap() {
+      if (!shipmentHistory || shipmentHistory.length === 0) {
+        showStatus('No location updates yet for this shipment.');
+        return;
+      }
+
+      const latest = shipmentHistory[shipmentHistory.length - 1];
+
+      try {
+        // Geocode current location and destination in parallel
+        const [current, destination] = await Promise.all([
+          geocode(latest.city_name),
+          destinationAddr ? geocode(destinationAddr) : Promise.resolve(null)
+        ]);
+
+        if (!current) {
+          showStatus(`⚠ Could not locate "${latest.city_name}" on the map.`, true);
+          return;
+        }
+
+        // Current location marker (blue dot)
+        L.marker([current.lat, current.lon], { icon: currentIcon })
+          .addTo(map)
+          .bindPopup(`
+            <div style="min-width:170px">
+              <p style="font-weight:700;font-size:13px;color:#2563eb;margin:0 0 3px">📦 Current Location</p>
+              <p style="font-weight:600;font-size:14px;margin:0 0 3px">${latest.city_name}</p>
+              <p style="color:#555;font-size:12px;margin:0">${latest.status_notes}</p>
+            </div>
+          `).openPopup();
+
+        if (destination) {
+          // Destination marker (green flag)
+          L.marker([destination.lat, destination.lon], { icon: destIcon })
+            .addTo(map)
+            .bindPopup(`
+              <div style="min-width:170px">
+                <p style="font-weight:700;font-size:13px;color:#16a34a;margin:0 0 3px">🏁 Final Destination</p>
+                <p style="font-size:13px;margin:0">${destinationAddr}</p>
+              </div>
+            `);
+
+          // Dashed line from current → destination
+          L.polyline(
+            [[current.lat, current.lon], [destination.lat, destination.lon]],
+            { color: '#2563eb', weight: 2.5, dashArray: '8, 8', opacity: 0.7 }
+          ).addTo(map);
+
+          // Fit map to show both markers with padding
+          map.fitBounds(
+            [[current.lat, current.lon], [destination.lat, destination.lon]],
+            { padding: [60, 60] }
+          );
+        } else {
+          map.flyTo([current.lat, current.lon], 10, { animate: true, duration: 1.5 });
+        }
+
+      } catch (e) {
+        showStatus('⚠ Network error loading map. Please check your connection.', true);
+      }
+    }
+
+    renderMap();
+  </script>
+
+</body>
+</html>

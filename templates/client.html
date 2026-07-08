@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Shipments – Logistics Royal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100">
+
+  <!-- Navbar -->
+  <nav class="bg-slate-900 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M20 7l-8-4-8 4m16 0v10l-8 4m0-14L4 17m8 4V11"/>
+        </svg>
+      </div>
+      <span class="text-white font-bold text-lg">Logistics Royal</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-slate-300 text-sm">👤 {{ session.username }}</span>
+      <a href="/logout" class="text-sm text-red-400 hover:text-red-300 transition">Logout</a>
+    </div>
+  </nav>
+
+  <div class="max-w-4xl mx-auto px-4 py-10">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-slate-800">My Shipments</h1>
+      <p class="text-slate-500 text-sm mt-1">Click on any shipment to view live tracking.</p>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="mb-6 p-4 bg-red-100 border border-red-300 rounded-xl text-red-700 text-sm">
+          {{ messages[0] }}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if shipments %}
+      <div class="grid gap-4">
+        {% for s in shipments %}
+          <a href="/client/track/{{ s.id }}"
+            class="block bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300
+                   transition-all duration-200 p-5 group">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition">
+                  <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M20 7l-8-4-8 4m16 0v10l-8 4m0-14L4 17m8 4V11"/>
+                  </svg>
+                </div>
+                <div>
+                  <p class="font-mono font-bold text-slate-800 text-base">{{ s.tracking_number }}</p>
+                  <p class="text-xs text-slate-400 mt-0.5">Created: {{ s.created_at }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="
+                  text-xs font-semibold px-3 py-1 rounded-full
+                  {% if s.current_status == 'Pending' %}bg-amber-100 text-amber-700
+                  {% elif 'Delivered' in s.current_status %}bg-green-100 text-green-700
+                  {% else %}bg-blue-100 text-blue-700{% endif %}
+                ">
+                  {{ s.current_status }}
+                </span>
+                <svg class="w-5 h-5 text-slate-300 group-hover:text-blue-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="text-center py-20 bg-white rounded-2xl border border-slate-200">
+        <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0v10l-8 4m0-14L4 17m8 4V11"/>
+          </svg>
+        </div>
+        <p class="text-slate-500 font-medium">No shipments assigned yet.</p>
+        <p class="text-slate-400 text-sm mt-1">Contact your administrator to create a shipment.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</body>
+</html>
