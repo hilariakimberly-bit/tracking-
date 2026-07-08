@@ -20,7 +20,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "logistics-royal-dev-secret")
 
-UPLOAD_FOLDER = os.path.join("static", "uploads")
+UPLOAD_FOLDER = "/tmp" if os.environ.get("DATABASE_URL") else os.path.join("static", "uploads")
 ALLOWED_EXT   = {"png", "jpg", "jpeg", "webp", "gif"}
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 try:
@@ -349,7 +349,10 @@ def create_shipment():
     if file and file.filename and allowed_file(file.filename):
         ext            = file.filename.rsplit(".", 1)[1].lower()
         image_filename = f"{tracking_number}.{ext}"
-        file.save(os.path.join(app.config["UPLOAD_FOLDER"], image_filename))
+        try:
+            file.save(os.path.join(app.config["UPLOAD_FOLDER"], image_filename))
+        except Exception:
+            image_filename = ""
 
     query(
         """INSERT INTO shipments
